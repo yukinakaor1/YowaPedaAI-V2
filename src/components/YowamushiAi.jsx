@@ -1,42 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Route, MessageSquare, Paperclip, Mic, CircleArrowUp, X, Bike, UserRound, Zap, ChevronRight, LogOut, ArrowLeft, Brain, Timer} from 'lucide-react';
-import { sendMessageToGemini } from '../lib/gemini';
-
-const handleSendMessage = () => {
-  const message = document.getElementById('messageInput').value;
-  const characterName = 'Kuroda Yukinari';
-
-  // Check if the device is a mobile device
-  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-
-  // Use touch events for mobile devices
-  if (isMobile) {
-    document.getElementById('sendButton').addEventListener('touchstart', () => {
-      sendMessageToGemini(message, characterName)
-        .then(response => {
-          // Handle the response from Gemini
-          console.log(response);
-        })
-        .catch(error => {
-          // Handle any errors that occurred during the request
-          console.error(error);
-        });
-    });
-  } else {
-    // Use regular click event for non-mobile devices
-    document.getElementById('sendButton').addEventListener('click', () => {
-      sendMessageToGemini(message, characterName)
-        .then(response => {
-          // Handle the response from Gemini
-          console.log(response);
-        })
-        .catch(error => {
-          // Handle any errors that occurred during the request
-          console.error(error);
-        });
-    });
-  }
-};
+import { Route, MessageSquare, Paperclip, Mic, CircleArrowUp, X, Bike, UserRound, Zap, ChevronRight, LogOut, ArrowLeft, Brain, Timer, Menu } from 'lucide-react';
+import { sendMessageToGemini } from '../lib/gemini'; 
 
 // --- CHARACTER DATA ---
 const CHARACTER_PROFILES = [
@@ -75,51 +39,51 @@ const LandingPage = ({ onStart }) => {
       <div className="absolute inset-0 bg-gradient-to-b from-[#03112b]/80 via-transparent to-[#03112b]" />
       
       {/* Header */}
-      <header className="relative z-10 px-6 py-8 lg:px-20 flex justify-between items-center border-b border-white/10 backdrop-blur-sm">
+      <header className="relative z-10 px-4 py-6 lg:px-20 flex justify-between items-center border-b border-white/10 backdrop-blur-sm">
         <div className="flex items-center gap-2">
           <Bike className="w-8 h-8 text-blue-400" />
-          <h1 className="text-2xl font-black tracking-tighter italic">YOWAPEDA<span className="text-blue-400">AI</span></h1>
+          <h1 className="text-xl lg:text-2xl font-black tracking-tighter italic">YOWAPEDA<span className="text-blue-400">AI</span></h1>
         </div>
         
         <div className="flex items-center gap-4">
           <button 
             onClick={() => setShowCharacters(true)}
-            className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest hover:text-blue-400 transition-colors"
+            className="flex items-center gap-2 text-xs lg:text-sm font-bold uppercase tracking-widest hover:text-blue-400 transition-colors"
           >
             <UserRound className="w-4 h-4" />
-            Characters
+            <span className="hidden sm:inline">Characters</span>
           </button>
         </div>
       </header>
 
       {/* Character Profile Modal */}
       {showCharacters && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 animate-pop">
-          <div className="bg-[#0d2545] w-full max-w-5xl rounded-[40px] border-2 border-white/10 overflow-hidden relative flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/90 animate-pop">
+          <div className="bg-[#0d2545] w-full max-w-5xl rounded-3xl lg:rounded-[40px] border-2 border-white/10 overflow-hidden relative flex flex-col max-h-[90vh]">
             <button 
               onClick={() => setShowCharacters(false)}
-              className="absolute top-6 right-6 p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors z-10"
+              className="absolute top-4 right-4 lg:top-6 lg:right-6 p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors z-10"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5 lg:w-6 lg:h-6" />
             </button>
             
-            <div className="p-8 lg:p-12 overflow-y-auto custom-scrollbar">
-              <h2 className="text-3xl lg:text-5xl font-black italic uppercase tracking-tighter mb-10 text-blue-400">Characters</h2>
+            <div className="p-6 lg:p-12 overflow-y-auto custom-scrollbar">
+              <h2 className="text-2xl lg:text-5xl font-black italic uppercase tracking-tighter mb-8 text-blue-400">Characters</h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
                 {CHARACTER_PROFILES.map((char) => (
-                  <div key={char.name} className="flex flex-col bg-white/5 rounded-3xl border border-white/10 overflow-hidden hover:border-blue-500/50 transition-all group">
-                    <div className="h-64 overflow-hidden relative">
-                      <img src={char.image} alt={char.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500 scale-105 group-hover:scale-100" />
+                  <div key={char.name} className="flex flex-col bg-white/5 rounded-2xl border border-white/10 overflow-hidden group">
+                    <div className="h-48 lg:h-64 overflow-hidden relative">
+                      <img src={char.image} alt={char.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#0d2545] to-transparent" />
                       <div className="absolute bottom-4 left-6">
                         <span className="text-[10px] font-black uppercase tracking-widest bg-blue-600 px-2 py-1 rounded-md">{char.specialty}</span>
                       </div>
                     </div>
-                    <div className="p-6">
-                      <h3 className="text-xl font-black italic uppercase tracking-tighter mb-1">{char.name}</h3>
-                      <p className="text-blue-400 text-xs font-bold uppercase tracking-widest mb-4">{char.title}</p>
-                      <p className="text-gray-400 text-sm leading-relaxed">{char.description}</p>
+                    <div className="p-5">
+                      <h3 className="text-lg font-black italic uppercase tracking-tighter mb-1">{char.name}</h3>
+                      <p className="text-blue-400 text-[10px] font-bold uppercase tracking-widest mb-3">{char.title}</p>
+                      <p className="text-gray-400 text-xs leading-relaxed line-clamp-4">{char.description}</p>
                     </div>
                   </div>
                 ))}
@@ -129,47 +93,47 @@ const LandingPage = ({ onStart }) => {
         </div>
       )}
 
-      <main className="relative z-10 flex flex-col items-center pt-20 pb-32 px-6">
-        <div className="text-center max-w-4xl mb-24">
-          <div className="inline-block bg-blue-600/20 border border-blue-500/30 px-4 py-1 rounded-full text-blue-300 text-xs font-black uppercase tracking-widest mb-6">Hakone Academy Edition</div>
-          <h2 className="text-5xl lg:text-8xl font-black italic tracking-tighter mb-6 leading-none uppercase">OVER THE <span className="text-blue-500">LIMIT.</span></h2>
-          <p className="text-gray-400 text-lg lg:text-xl max-w-2xl mx-auto mb-10">Chat with the kings of the road. AI-powered Hakone Academy rivals await your challenge.</p>
-          <button onClick={onStart} className="group relative inline-flex items-center gap-3 bg-white text-[#03112b] px-10 py-5 rounded-2xl font-black text-xl transition-all hover:bg-blue-500 hover:text-white shadow-[0_0_50px_rgba(59,130,246,0.3)]">
-            START TRAINING <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+      <main className="relative z-10 flex flex-col items-center pt-10 lg:pt-20 pb-20 px-4 lg:px-6">
+        <div className="text-center max-w-4xl mb-16">
+          <div className="inline-block bg-blue-600/20 border border-blue-500/30 px-3 py-1 rounded-full text-blue-300 text-[10px] lg:text-xs font-black uppercase tracking-widest mb-6">Hakone Academy Edition</div>
+          <h2 className="text-4xl lg:text-8xl font-black italic tracking-tighter mb-6 leading-none uppercase">OVER THE <span className="text-blue-500">LIMIT.</span></h2>
+          <p className="text-gray-400 text-sm lg:text-xl max-w-2xl mx-auto mb-10">Chat with the kings of the road. AI-powered Hakone Academy rivals await your challenge.</p>
+          <button onClick={onStart} className="group relative inline-flex items-center gap-3 bg-white text-[#03112b] px-8 lg:px-10 py-4 lg:py-5 rounded-xl lg:rounded-2xl font-black text-lg lg:text-xl transition-all hover:bg-blue-500 hover:text-white shadow-lg active:scale-95">
+            START TRAINING <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
 
         {/* Feature Preview (Icons Only) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl mb-32">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 w-full max-w-6xl mb-24 lg:mb-32">
           {CHARACTER_PROFILES.map((char) => (
-            <div key={char.name} className="bg-white/5 border border-white/10 p-8 rounded-3xl transition-all group cursor-default">
-              <Bike className="w-10 h-10 text-blue-400 mb-6 group-hover:rotate-12 transition-transform" />
-              <h3 className="text-2xl font-bold italic uppercase tracking-tighter">{char.name}</h3>
-              <div className="h-1 w-12 bg-blue-500 rounded-full mt-4 group-hover:w-full transition-all duration-500"></div>
+            <div key={char.name} className="bg-white/5 border border-white/10 p-6 lg:p-8 rounded-2xl transition-all group">
+              <Bike className="w-8 lg:w-10 h-8 lg:h-10 text-blue-400 mb-4 group-hover:rotate-12 transition-transform" />
+              <h3 className="text-xl lg:text-2xl font-bold italic uppercase tracking-tighter">{char.name}</h3>
+              <div className="h-1 w-10 bg-blue-500 rounded-full mt-3 group-hover:w-full transition-all duration-500"></div>
             </div>
           ))}
         </div>
 
         <section className="w-full max-w-6xl">
-          <div className="flex flex-col lg:flex-row gap-12 items-start">
+          <div className="flex flex-col lg:flex-row gap-10 items-start">
             <div className="lg:w-1/3">
-              <h2 className="text-4xl font-black italic uppercase tracking-tighter text-blue-400 mb-4">ABOUT</h2>
-              <p className="text-gray-400 leading-relaxed">
+              <h2 className="text-3xl lg:text-4xl font-black italic uppercase tracking-tighter text-blue-400 mb-4">ABOUT</h2>
+              <p className="text-gray-400 text-sm lg:text-base leading-relaxed">
                 YowaPedaAI is an immersive roleplay experience designed to bring the elite members of Hakone Academy directly to you. From high-stakes race banter to quiet moments off the road, your story starts here. 
               </p>
             </div>
             
-           <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
+           <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6">
           {[
-            { title: 'ELITE PERSONAS', icon: <Brain />, desc: 'AUTHENTIC VOICES Powered by GeminiAI to capture the unique speech patterns, quirks, and attitudes of Kuroda, Yuto, and Izumida. It\'s more than a chat—it\'s them.' },
-            { title: 'LIMITLESS SCENARIOS', icon: <Zap />, desc: 'BEYOND THE RACE Whether it\'s a grueling climb up the mountain, a post-training recovery, or a casual after-school AU, the narrative is entirely in your hands.' },
-            { title: 'PERSISTENT MEMORY', icon: <Timer />, desc: 'EVOLVING BONDS The AI remembers your past interactions and shared history, allowing your relationships—and the drama—to grow deeper with every message.' },
-            { title: 'THE HAKONE SPIRIT', icon: <Route />, desc: 'THE KING\'S PRIDE Specifically tuned for fans who want to experience the intensity and brotherhood of Hakone Academy. Feel the heat of the road and the heart of the team.' }
+            { title: 'ELITE PERSONAS', icon: <Brain />, desc: 'Powered by GeminiAI to capture the speech patterns, quirks, and attitudes of the Kings of the Road.' },
+            { title: 'LIMITLESS SCENARIOS', icon: <Zap />, desc: 'Whether it\'s a grueling climb or post-training recovery, the narrative is entirely in your hands.' },
+            { title: 'PERSISTENT MEMORY', icon: <Timer />, desc: 'The AI remembers your past interactions, allowing your bonds to grow deeper with every message.' },
+            { title: 'THE HAKONE SPIRIT', icon: <Route />, desc: 'Specifically tuned for fans who want to experience the intensity and brotherhood of the team.' }
           ].map((item, i) => (
-            <div key={i} className="bg-white/5 border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition-all">
-              <div className="text-blue-400 mb-4">{item.icon}</div>
-              <h4 className="text-lg font-black italic uppercase mb-2">{item.title}</h4>
-              <p className="text-sm text-gray-500">{item.desc}</p>
+            <div key={i} className="bg-white/5 border border-white/10 p-5 lg:p-6 rounded-xl">
+              <div className="text-blue-400 mb-3">{item.icon}</div>
+              <h4 className="text-md lg:text-lg font-black italic uppercase mb-2">{item.title}</h4>
+              <p className="text-[11px] lg:text-sm text-gray-500">{item.desc}</p>
             </div>
               ))}
             </div>
@@ -242,6 +206,9 @@ const YowamushiAi = () => {
         style={{ backgroundImage: `url('https://static.wikia.nocookie.net/yowamushipedal/images/9/9d/Ahighplacecover.jpg/revision/latest?cb=20190804220737')` }} 
       />
 
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && <div className="fixed inset-0 bg-black/70 z-40 lg:hidden" onClick={() => setIsSidebarOpen(false)} />}
+
       <aside className={`fixed inset-y-0 left-0 z-50 w-72 transform transition-transform duration-300 lg:relative lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col h-full bg-[#03112b] p-5 border-r border-white/10 shadow-2xl`}>
         <div className="flex items-center justify-between mb-8 px-1">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => setShowApp(false)}>
@@ -273,32 +240,47 @@ const YowamushiAi = () => {
         </nav>
       </aside>
 
-      <main className="opacity-90 flex-1 relative flex flex-col items-center justify-center p-4 lg:p-8">
-        <div className="relative w-full max-w-3xl h-[85vh] lg:h-[80vh] bg-[#0d2545] rounded-[40px] border border-white/10 shadow-2xl flex flex-col overflow-hidden">
-          <div className="flex items-center justify-between px-8 py-6 border-b border-white/10 bg-[#0a1b33]">
-            <h2 className="text-lg font-black italic tracking-tighter uppercase tracking-wide">Challenging <span className="text-blue-400">{activeCharacter}</span></h2>
-            <button onClick={() => setShowApp(false)} className="flex items-center gap-2 bg-white/5 px-4 py-2 rounded-xl text-[10px] font-black tracking-widest uppercase hover:text-red-400"><LogOut className="w-3 h-3" />Quit Race</button>
+      <main className="flex-1 relative flex flex-col items-center justify-center p-2 sm:p-4 lg:p-8">
+        <div className="lg:hidden flex w-full items-center justify-between mb-2 px-2">
+          <button onClick={() => setIsSidebarOpen(true)} className="p-2 bg-[#0d2545] rounded-lg"><Menu className="w-5 h-5"/></button>
+          <span className="font-black italic text-blue-400 uppercase tracking-tighter">RACING: {activeCharacter.split(' ')[0]}</span>
+          <button onClick={() => setShowApp(false)} className="p-2 bg-[#0d2545] rounded-lg"><LogOut className="w-5 h-5" /></button>
+        </div>
+
+        <div className="opacity-90 relative w-full max-w-3xl h-full lg:h-[80vh] bg-[#0d2545] rounded-3xl lg:rounded-[40px] border border-white/10 shadow-2xl flex flex-col overflow-hidden">
+          <div className="flex items-center justify-between px-6 py-4 lg:px-8 lg:py-6 border-b border-white/10 bg-[#0a1b33]">
+            <h2 className="text-sm lg:text-lg font-black italic tracking-tighter uppercase tracking-wide">Challenging <span className="text-blue-400">{activeCharacter}</span></h2>
+            <button onClick={() => setShowApp(false)} className="hidden sm:flex items-center gap-2 bg-white/5 px-4 py-2 rounded-xl text-[10px] font-black tracking-widest uppercase hover:text-red-400 transition-colors"><LogOut className="w-3 h-3" />Quit Race</button>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-8 py-8 space-y-6 custom-scrollbar bg-[#0d2545]">
+          <div className="flex-1 overflow-y-auto px-4 py-6 lg:px-8 lg:py-8 space-y-6 custom-scrollbar bg-[#0d2545]">
             {messages.map((msg) => (
               <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-pop`}>
-                <div className={`max-w-[85%] p-4 lg:p-5 rounded-2xl shadow-xl border ${msg.sender === 'user' ? 'bg-blue-600 text-white rounded-tr-none border-blue-400' : 'bg-[#1e3a8a]/40 text-white rounded-tl-none border-white/10'}`}>
-                  <p className="text-sm font-bold italic leading-relaxed">{msg.text}</p>
+                <div className={`max-w-[90%] lg:max-w-[85%] p-4 lg:p-5 rounded-2xl shadow-xl border ${msg.sender === 'user' ? 'bg-blue-600 text-white rounded-tr-none border-blue-400' : 'bg-[#1e3a8a]/40 text-white rounded-tl-none border-white/10'}`}>
+                  <p className="text-xs lg:text-sm font-bold italic leading-relaxed">{msg.text}</p>
                 </div>
               </div>
             ))}
             {isTyping && (
-              <div className="flex justify-start animate-pop"><div className="bg-[#1e3a8a]/40 p-4 rounded-xl flex gap-1"><span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce"></span><span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span><span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span></div></div>
+              <div className="flex justify-start animate-pop">
+                <div className="bg-[#1e3a8a]/40 p-4 rounded-xl flex gap-1">
+                  <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce"></span>
+                  <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                  <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                </div>
+              </div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="p-8 bg-[#0a1b33] border-t border-white/10">
-            <div className="relative flex items-center bg-[#1e3a8a]/20 rounded-2xl px-5 py-2 border border-white/10 focus-within:border-blue-500/50">
-              <div className="flex items-center gap-3 mr-3 text-white/50"><Paperclip className="w-5 h-5 cursor-pointer hover:text-white" /><Mic className="w-5 h-5 cursor-pointer hover:text-white" /></div>
-              <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} placeholder={`Type your strategy...`} className="bg-transparent flex-1 outline-none py-3 text-sm font-black italic placeholder:text-gray-500" disabled={isTyping} />
-              <button onClick={handleSendMessage} disabled={isTyping || !inputValue.trim()} className="bg-blue-600 p-2 rounded-xl ml-2"><CircleArrowUp className="w-6 h-6" /></button>
+          <div className="p-4 lg:p-8 bg-[#0a1b33] border-t border-white/10">
+            <div className="relative flex items-center bg-[#1e3a8a]/20 rounded-xl lg:rounded-2xl px-3 py-1 lg:px-5 lg:py-2 border border-white/10 focus-within:border-blue-500/50">
+              <div className="flex items-center gap-2 lg:gap-3 mr-2 lg:mr-3 text-white/50">
+                <Paperclip className="w-4 h-4 lg:w-5 lg:h-5 cursor-pointer hover:text-white" />
+                <Mic className="w-4 h-4 lg:w-5 lg:h-5 cursor-pointer hover:text-white" />
+              </div>
+              <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} placeholder={`Strategy...`} className="bg-transparent flex-1 outline-none py-3 text-xs lg:text-sm font-black italic placeholder:text-gray-500" disabled={isTyping} />
+              <button onClick={handleSendMessage} disabled={isTyping || !inputValue.trim()} className="bg-blue-600 p-2 rounded-lg lg:rounded-xl ml-2 active:scale-95"><CircleArrowUp className="w-5 h-5 lg:w-6 lg:h-6" /></button>
             </div>
           </div>
         </div>
