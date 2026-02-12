@@ -16,12 +16,6 @@ const LandingPage = ({ onStart }) => {
           <Bike className="w-8 h-8 text-blue-400" />
           <h1 className="text-2xl font-black tracking-tighter italic">YOWAPEDA<span className="text-blue-400">AI</span></h1>
         </div>
-        <button 
-          onClick={onStart}
-          className="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-full font-bold text-sm transition-all transform hover:scale-105 active:scale-95 shadow-lg"
-        >
-          Enter Chat
-        </button>
       </header>
 
       <main className="relative z-10 flex flex-col items-center pt-20 pb-32 px-6">
