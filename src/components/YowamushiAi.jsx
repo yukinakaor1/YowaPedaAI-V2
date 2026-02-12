@@ -1,6 +1,42 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Route, MessageSquare, Paperclip, Mic, CircleArrowUp, X, Bike, UserRound, Zap, ChevronRight, LogOut, ArrowLeft, Brain, Timer} from 'lucide-react';
-import { sendMessageToGemini } from '../lib/gemini'; 
+import { sendMessageToGemini } from '../lib/gemini';
+
+const handleSendMessage = () => {
+  const message = document.getElementById('messageInput').value;
+  const characterName = 'Kuroda Yukinari';
+
+  // Check if the device is a mobile device
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+
+  // Use touch events for mobile devices
+  if (isMobile) {
+    document.getElementById('sendButton').addEventListener('touchstart', () => {
+      sendMessageToGemini(message, characterName)
+        .then(response => {
+          // Handle the response from Gemini
+          console.log(response);
+        })
+        .catch(error => {
+          // Handle any errors that occurred during the request
+          console.error(error);
+        });
+    });
+  } else {
+    // Use regular click event for non-mobile devices
+    document.getElementById('sendButton').addEventListener('click', () => {
+      sendMessageToGemini(message, characterName)
+        .then(response => {
+          // Handle the response from Gemini
+          console.log(response);
+        })
+        .catch(error => {
+          // Handle any errors that occurred during the request
+          console.error(error);
+        });
+    });
+  }
+};
 
 // --- CHARACTER DATA ---
 const CHARACTER_PROFILES = [
