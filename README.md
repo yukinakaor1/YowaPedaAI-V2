@@ -1,6 +1,6 @@
 # PROJECT OVERVIEW
 
-**(Development) What is YowaPedaAi: Hakone Edition?**
+**What is YowaPedaAi: Hakone Edition?**
 The YowaPedaAI: Hakone Academy Edition is a specialized, persona-based AI platform designed to immerse users in the elite,
 high-performance world of the Yowamushi Pedal series' premier cycling team. Whether you're looking for the frantic, high-cadence 
 encouragement or calculated tactical analysis of the characters. This AI adapts its tone and expertise
