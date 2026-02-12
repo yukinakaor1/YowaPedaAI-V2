@@ -1,211 +1,374 @@
-import React, { useState, useEffect, useRef } from "react";
-import { sendMessageToGemini } from "../lib/gemini";
+import React, { useState, useEffect, useRef } from 'react';
+import { Menu, UserCircle, MessageSquare, ChevronDown, Paperclip, Mic, SendHorizontal, X, Globe } from 'lucide-react';
+import { sendMessageToGemini } from '../lib/gemini';
 
-// --- Sub-Component: Message ---
-const Message = ({ sender, text }) => (
-  <div className={`mb-6 animate-fade-in-up flex flex-col ${sender === 'User' ? 'items-end' : 'items-start'}`}>
-    <p className={`font-bold text-lg mb-1 ${sender === 'User' ? 'text-blue-300' : 'text-white'}`}>{sender.split(' ')[0]}:</p>
-    <div className={`rounded-2xl p-4 max-w-[80%] ${sender === 'User' ? 'bg-[#1e3a8a]/50 text-white' : 'bg-black/30 text-white/90'}`}>
-      <p className="text-lg leading-relaxed">{text}</p>
-    </div>
-    <style>{`
-      @keyframes fadeInUp {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      .animate-fade-in-up { animation: fadeInUp 0.4s ease-out forwards; }
-    `}</style>
+// --- Helper Component: Main Sidebar Navigation Items ---
+const NavItem = ({ icon, label, onClick }) => (
+  <div 
+    onClick={onClick}
+    className="flex items-center justify-between p-3 rounded-lg hover:bg-white/10 cursor-pointer transition-all group active:scale-95"
+  >
+    <span className="font-semibold text-sm">{label}</span>
+    <span className="text-white group-hover:opacity-100">{icon}</span>
   </div>
 );
 
-export default function ChatInterface() {
-  // --- Logic State ---
-  const [character, setCharacter] = useState("Kuroda Yukinari");
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [typing, setTyping] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const messagesEndRef = useRef(null);
+// --- Helper Component: Character List Items ---
+const CharacterItem = ({ label, onClick, isActive }) => (
+  <div 
+    onClick={onClick}
+    className={`bg-white/10 rounded-lg p-3 cursor-pointer hover:bg-white/20 transition-all shadow-sm active:scale-95 border-2 ${
+      isActive ? 'border-white/60 scale-105 shadow-lg bg-white/20' : 'border-transparent'
+    }`}
+  >
+    <span className="font-bold text-sm text-white">{label}</span>
+  </div>
+);
 
-  const charLines = {
-    "Kuroda Yukinari": "User.Name000, are we climbing, racing, or just talking at the start line?",
-    "Shinkai Yuto": "What do you want to talk about?",
-    "Izumida Touichirou": "User.Name000. Tell me, do you wish to talk cycling?",
+// --- MAIN APPLICATION COMPONENT ---
+const ChatInterface = () => {
+  const characterGreetings = {
+    'Kuroda Yukinari': "User.Name000, are we climbing, racing, or just talking at the start line?",
+    'Shinkai Yuto': "What do you want to talk about?",
+    'Izumida Touichirou': "User.Name000. Tell me, do you wish to talk cycling?"
   };
 
+  const characterThemes = {
+    'Kuroda Yukinari': {
+      glow: 'shadow-[0_0_40px_rgba(30,58,138,0.4)]',
+      border: 'border-[#1e3a8a]/30',
+      accent: 'text-blue-300',
+      msgBg: 'bg-[#1e3a8a]/20'
+    },
+    'Shinkai Yuto': {
+      glow: 'shadow-[0_0_40px_rgba(239,68,68,0.4)]',
+      border: 'border-red-600/30',
+      accent: 'text-red-300',
+      msgBg: 'bg-red-900/20'
+    },
+    'Izumida Touichirou': {
+      glow: 'shadow-[0_0_40px_rgba(34,197,94,0.4)]',
+      border: 'border-green-600/30',
+      accent: 'text-green-300',
+      msgBg: 'bg-green-900/20'
+    }
+  };
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [activeCharacter, setActiveCharacter] = useState('Kuroda Yukinari');
+  const [isTyping, setIsTyping] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      sender: 'bot',
+      text: characterGreetings['Kuroda Yukinari']
+    }
+  ]);
+
+  const messagesEndRef = useRef(null);
+  const currentTheme = characterThemes[activeCharacter];
+
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, typing]);
+  }, [messages, isTyping]);
 
-  // Initial greeting on character change
-  useEffect(() => {
-    setMessages([{ role: 'model', sender: character, message: charLines[character] || "..." }]);
-    setInputValue("");
-  }, [character]);
+  const handleSwitchCharacter = (name) => {
+    setActiveCharacter(name);
+    setMessages([
+      {
+        id: Date.now(),
+        sender: 'bot',
+        text: characterGreetings[name]
+      }
+    ]);
+    setInputValue('');
+    setIsSidebarOpen(false);
+  };
+
+  const handleNewChat = () => {
+    setMessages([
+      {
+        id: Date.now(),
+        sender: 'bot',
+        text: characterGreetings[activeCharacter]
+      }
+    ]);
+    setInputValue('');
+    setIsSidebarOpen(false);
+  };
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || isTyping) return;
 
     const userMessage = inputValue;
-    setInputValue("");
+    setInputValue('');
 
-    // Add user message immediately
-    const newMessages = [...messages, { role: 'user', sender: 'User', message: userMessage }];
-    setMessages(newMessages);
-    setTyping(true);
+    // Add user message
+    const newUserMsg = {
+      id: Date.now(),
+      sender: 'user',
+      text: userMessage
+    };
+    setMessages(prev => [...prev, newUserMsg]);
+    setIsTyping(true);
 
     try {
-      // Filter out the initial greeting if it's not a real conversation turn, 
-      // but for simplicity we'll just pass the purely conversation history excluding current user message
-      // or actually, pass the history correctly.
-      // The API expects history in specific format. 
-      // We'll pass the `messages` state (excluding the just added one for history, or include it if the API handles it).
-      // Our `sendMessageToGemini` takes history separately. 
-      // We should pass the *previous* messages as history.
-
-      // Only include actual conversation messages (skip initial greeting)
+      // Prepare history (exclude initial greeting and current message)
       const historyForApi = messages
-        .filter((m, idx) => idx > 0) // skip the first greeting message
+        .slice(1) // Skip first greeting
         .map(m => ({
-          role: m.sender === 'User' ? 'user' : 'model',
-          message: m.message
+          role: m.sender === 'user' ? 'user' : 'model',
+          message: m.text
         }));
 
-      const responseText = await sendMessageToGemini(userMessage, character, historyForApi);
-
-      setMessages(prev => [...prev, { role: 'model', sender: character, message: responseText }]);
+      const responseText = await sendMessageToGemini(userMessage, activeCharacter, historyForApi);
+      
+      setMessages(prev => [
+        ...prev,
+        {
+          id: Date.now(),
+          sender: 'bot',
+          text: responseText
+        }
+      ]);
     } catch (error) {
-      console.error("Chat error", error);
-      const errorMsg = error?.message || String(error);
-      setMessages(prev => [...prev, { role: 'model', sender: 'System', message: `Error: ${errorMsg}` }]);
+      console.error('Chat error:', error);
+      setMessages(prev => [
+        ...prev,
+        {
+          id: Date.now(),
+          sender: 'bot',
+          text: `Error: ${error?.message || String(error)}`
+        }
+      ]);
     } finally {
-      setTyping(false);
+      setIsTyping(false);
     }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
       handleSendMessage();
     }
   };
 
   return (
-    <div className="flex h-screen w-full bg-[#bfdbfe] font-sans overflow-hidden relative">
+    <div className="flex h-screen w-full overflow-hidden bg-[#bfdbfe] font-sans text-white">
+      {/* Overlay for mobile sidebar */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity duration-300"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
 
-      {/* 1. Global Halftone Background */}
-      <div className="absolute inset-0 z-0 opacity-60 pointer-events-none"
-        style={{ backgroundImage: 'radial-gradient(circle, white 4px, transparent 4px)', backgroundSize: '30px 30px' }} />
-
-      {/* 2. Sidebar Component */}
-      <aside className={`fixed lg:relative inset-y-0 left-0 z-50 w-72 bg-[#03112b] transition-transform duration-300 transform lg:translate-x-0 ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}`}>
-        <div className="p-5 flex flex-col h-full gap-6">
-          <div className="flex items-center justify-between text-white px-1">
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /></svg>
-              <span className="font-bold tracking-tight">YowaPedaAi</span>
-              <button className="p-1 hover:bg-white/10 rounded ml-1"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></svg></button>
-            </div>
-            <button onClick={() => setIsMenuOpen(false)} className="lg:hidden text-gray-400">✕</button>
+      {/* SIDEBAR */}
+      <aside className={`
+        fixed inset-y-0 left-0 z-50 w-72 transform transition-transform duration-300 ease-in-out
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        lg:relative lg:translate-x-0
+        flex flex-col h-full bg-[#03112b] p-5 border-r border-white/5
+      `}>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8 px-1">
+          <div className="flex items-center gap-2">
+            <Globe className="w-6 h-6 text-white" />
+            <h1 className="text-xl font-bold tracking-tight text-white">YowaPedaAi</h1>
           </div>
-          <button
-            onClick={() => {
-              setMessages([{ role: 'model', sender: character, message: charLines[character] }]);
-              setIsMenuOpen(false);
-            }}
-            className="bg-white text-[#03112b] rounded-lg py-2.5 font-bold shadow-lg hover:bg-gray-200 transition-colors"
+          <button 
+            onClick={() => setIsSidebarOpen(false)}
+            className="lg:hidden p-1"
           >
-            New Chat
+            <X className="w-6 h-6 text-white" />
           </button>
-          <div className="flex flex-col gap-2">
-            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest px-1">👤 Characters</p>
-            {Object.keys(charLines).map((c) => (
-              <button key={c} onClick={() => { setCharacter(c); setIsMenuOpen(false); }}
-                className={`w-full py-2.5 rounded-lg font-bold text-sm transition-all ${character === c ? "bg-white text-[#03112b]" : "bg-white/10 text-white hover:bg-white/20"}`}>
-                {c}
-              </button>
+          <Menu className="hidden lg:block w-6 h-6 cursor-pointer text-white" />
+        </div>
+
+        {/* User Profile */}
+        <div className="flex items-center gap-3 mb-8 px-1">
+          <UserCircle className="w-9 h-9 text-white" />
+          <span className="font-semibold text-sm">User.Name000</span>
+        </div>
+
+        {/* Navigation */}
+        <nav className="space-y-1 mb-6">
+          <NavItem 
+            icon={<MessageSquare size={20} />} 
+            label="New Chat"
+            onClick={handleNewChat}
+          />
+        </nav>
+
+        {/* Characters Section */}
+        <div className="space-y-2 mb-6">
+          <div className="bg-white/10 rounded-lg p-3 flex justify-between items-center shadow-inner">
+            <span className="font-bold text-sm text-white">👤 Characters</span>
+          </div>
+          <div className="space-y-2">
+            {Object.keys(characterGreetings).map((charName) => (
+              <CharacterItem
+                key={charName}
+                label={charName.split(' ')[0]}
+                isActive={activeCharacter === charName}
+                onClick={() => handleSwitchCharacter(charName)}
+              />
             ))}
           </div>
-          <div className="mt-auto bg-white text-[#03112b] rounded-lg py-2.5 px-4 font-bold flex items-center gap-3 shadow-xl">
-            <div className="w-7 h-7 bg-black rounded-full flex items-center justify-center text-[10px] text-white">USER</div>
-            User.Name000
+        </div>
+
+        {/* Footer */}
+        <div className="mt-auto pt-4 border-t border-white/5">
+          <div className="bg-white text-[#03112b] rounded-lg p-3 flex items-center gap-2 shadow-xl">
+            <div className="w-7 h-7 bg-[#03112b] rounded-full flex items-center justify-center text-[10px] text-white font-bold">
+              U
+            </div>
+            <span className="font-bold text-sm truncate">User.Name000</span>
           </div>
         </div>
       </aside>
 
-      {/* 3. Main Content Container */}
-      <main className="flex-1 relative z-10 p-4 sm:p-6 flex flex-col items-center justify-center">
-
-        {/* Mobile Menu Trigger */}
-        <button onClick={() => setIsMenuOpen(true)} className="lg:hidden absolute top-6 left-6 bg-[#0f2550] text-white p-2 rounded-lg shadow-xl z-50">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="18" y2="18" /></svg>
-        </button>
-
-        {/* --- CHAT WINDOW START --- */}
-        <div className="flex flex-col h-full gap-3 sm:gap-4 max-w-4xl w-full mx-auto">
-
-          {/* Header Pill */}
-          <div className="bg-[#0f2550] rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-2xl border border-white/10 shrink-0">
-            <p className="text-gray-400 text-[10px] sm:text-xs font-medium uppercase tracking-wider">Welcome,</p>
-            <div className="flex items-center gap-2 text-white text-lg sm:text-2xl font-bold">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z" /></svg>
-              User.Name000
+      {/* MAIN CONTENT */}
+      <main 
+        className="flex-1 relative flex items-center justify-center p-2 sm:p-4 lg:p-6 bg-cover bg-center"
+        style={{ 
+          backgroundImage: `url('https://i.pinimg.com/736x/28/76/3e/28763eb80c7a8b668ebc7634be99b380.jpg')` 
+        }}
+      >
+        {/* Chat Container */}
+        <div className={`
+          relative w-full max-w-5xl h-full lg:h-[90vh] 
+          bg-[#0f2550]/90 backdrop-blur-xl 
+          rounded-2xl lg:rounded-[40px] border 
+          transition-all duration-700 
+          flex flex-col p-4 sm:p-6 lg:p-10
+          ${currentTheme.glow} ${currentTheme.border}
+        `}>
+          {/* Header */}
+          <div className="flex items-center gap-3 mb-6 lg:mb-8">
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="lg:hidden p-2 -ml-2 text-white"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <div className="flex items-center gap-1">
+              <h2 className={`font-bold text-lg transition-colors duration-500 ${currentTheme.accent}`}>
+                Chatting with {activeCharacter.split(' ')[0]}
+              </h2>
+              <ChevronDown className="w-4 h-4 text-white" />
             </div>
           </div>
 
-          {/* Main Panel */}
-          <div className="flex-1 bg-[#0f2550]/90 rounded-2xl sm:rounded-[32px] relative overflow-hidden shadow-2xl border border-white/10 flex flex-col p-6 sm:p-12 lg:p-16">
-            <div className="absolute inset-0 z-0 opacity-40 bg-cover bg-center pointer-events-none" style={{ backgroundImage: "url('https://i.pinimg.com/736x/28/76/3e/28763eb80c7a8b668ebc7634be99b380.jpg')" }} />
-            <div className="absolute inset-0 z-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #051c48 10px, transparent 10px)', backgroundSize: '40px 40px' }} />
-
-            <div className="relative z-10 h-full flex flex-col justify-start overflow-y-auto custom-scrollbar">
-              {messages.map((m, i) => <Message key={i} sender={m.sender} text={m.message} />)}
-              {typing && (
-                <div className="flex items-center gap-2 mt-4 animate-pulse">
-                  <p className="text-white/60 italic text-sm sm:text-lg">{character} is typing...</p>
+          {/* Messages Area */}
+          <div className="flex-1 overflow-y-auto space-y-6 lg:space-y-8 pr-2 custom-scrollbar">
+            {messages.map((msg) => (
+              <div 
+                key={msg.id}
+                className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-pop`}
+              >
+                <div className={`
+                  max-w-[85%] lg:max-w-[65%] 
+                  p-4 lg:p-6 
+                  rounded-2xl lg:rounded-3xl 
+                  shadow-xl border 
+                  transition-all duration-500
+                  ${msg.sender === 'user' 
+                    ? 'bg-[#1e3a8a]/50 text-white rounded-tr-none border-white/10' 
+                    : `${currentTheme.msgBg} text-white rounded-tl-none ${currentTheme.border} backdrop-blur-md`
+                  }
+                `}>
+                  <p className="text-xs lg:text-sm font-medium leading-relaxed text-white">
+                    {msg.text}
+                  </p>
                 </div>
-              )}
-              <div ref={messagesEndRef} />
-            </div>
+              </div>
+            ))}
+
+            {/* Typing Indicator */}
+            {isTyping && (
+              <div className="flex justify-start animate-pop">
+                <div className={`p-4 lg:p-6 rounded-2xl lg:rounded-3xl shadow-xl border ${currentTheme.msgBg} ${currentTheme.border} backdrop-blur-md`}>
+                  <div className="flex gap-1 items-center h-4 text-white">
+                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce"></span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
           </div>
 
           {/* Input Bar */}
-          <div className="bg-[#0f2550] rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl border border-white/10 flex flex-col gap-2 sm:gap-4 shrink-0 transition-all hover:border-white/20">
-            <p className="text-gray-500 italic text-[10px] sm:text-sm pl-1 font-light tracking-wide">Chat with {character.split(' ')[0]} . . .</p>
-            <div className="flex items-center gap-3 sm:gap-5">
-              <div className="flex items-center gap-3 sm:gap-4 text-white/70">
-                <button className="hover:text-white transition-colors p-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="rotate-45"><path d="m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551" /></svg>
-                </button>
-                <button className="hover:text-white transition-colors p-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><line x1="12" x2="12" y1="19" y2="22" /></svg>
-                </button>
+          <div className="mt-4 lg:mt-8 flex justify-center">
+            <div className={`
+              relative w-full max-w-2xl 
+              bg-[#0a4559] border 
+              transition-all duration-700 
+              rounded-full flex items-center 
+              px-4 py-3 lg:px-6 lg:py-4 
+              shadow-2xl
+              ${currentTheme.border}
+            `}>
+              <div className="flex items-center gap-3 lg:gap-4 mr-2 lg:mr-4">
+                <Paperclip className="w-4 lg:w-5 h-4 lg:h-5 text-white/70 hover:text-white cursor-pointer transition-colors" />
+                <Mic className="w-4 lg:w-5 h-4 lg:h-5 text-white/70 hover:text-white cursor-pointer transition-colors" />
               </div>
-              <div className="h-6 w-[1px] bg-white/20"></div>
               <input
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={`You're in chat with ${character}!`}
-                className="flex-1 bg-transparent text-white placeholder-white/30 focus:outline-none italic text-sm sm:text-lg font-light"
+                placeholder={`Chatting with ${activeCharacter.split(' ')[0]}...`}
+                className="bg-transparent flex-1 outline-none text-white text-xs lg:text-sm placeholder:text-white/30 font-medium"
+                disabled={isTyping}
               />
-              <button
+              <button 
                 onClick={handleSendMessage}
-                disabled={typing || !inputValue.trim()}
-                className="text-white/70 hover:text-white transition-transform hover:scale-110 active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isTyping || !inputValue.trim()}
+                className="ml-2 lg:ml-4 bg-white hover:bg-gray-200 transition-all rounded-full p-2 lg:p-2.5 shadow-lg active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="m16 12-4-4-4 4" /><path d="M12 16V8" /></svg>
+                <SendHorizontal className="w-4 lg:w-5 h-4 lg:h-5 text-[#0a4559]" />
               </button>
             </div>
           </div>
         </div>
-        {/* --- CHAT WINDOW END --- */}
-
       </main>
+
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 10px;
+        }
+        @keyframes pop {
+          0% {
+            opacity: 0;
+            transform: scale(0.95) translateY(10px);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+        .animate-pop {
+          animation: pop 0.4s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
-}
+};
+
+export default ChatInterface;
