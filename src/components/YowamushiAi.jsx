@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, UserCircle, MessageSquare, ChevronDown, Paperclip, Mic, SendHorizontal, X, Globe } from 'lucide-react';
+import { Menu, CircleUserRound, MessageSquare, ChevronDown, Paperclip, Mic, CircleArrowUp, X, Bike, UserRound } from 'lucide-react';
 import { sendMessageToGemini } from '../lib/gemini';
 
 // --- Helper Component: Main Sidebar Navigation Items ---
@@ -28,9 +28,9 @@ const CharacterItem = ({ label, onClick, isActive }) => (
 // --- MAIN APPLICATION COMPONENT ---
 const ChatInterface = () => {
   const characterGreetings = {
-    'Kuroda Yukinari': "User.Name000, are we climbing, racing, or just talking at the start line?",
+    'Kuroda Yukinari': "Username, are we climbing, racing, or just talking at the start line?",
     'Shinkai Yuto': "What do you want to talk about?",
-    'Izumida Touichirou': "User.Name000. Tell me, do you wish to talk cycling?"
+    'Izumida Touichirou': "Username. Tell me, do you wish to talk cycling?"
   };
 
   const characterThemes = {
@@ -178,7 +178,7 @@ const ChatInterface = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-8 px-1">
           <div className="flex items-center gap-2">
-            <Globe className="w-6 h-6 text-white" />
+            <Bike className="w-6 h-6 text-white" />
             <h1 className="text-xl font-bold tracking-tight text-white">YowaPedaAi</h1>
           </div>
           <button 
@@ -192,8 +192,8 @@ const ChatInterface = () => {
 
         {/* User Profile */}
         <div className="flex items-center gap-3 mb-8 px-1">
-          <UserCircle className="w-9 h-9 text-white" />
-          <span className="font-semibold text-sm">User.Name000</span>
+          <CircleUserRound className="w-9 h-9 text-white" />
+          <span className="font-semibold text-sm">Username</span>
         </div>
 
         {/* Navigation */}
@@ -208,7 +208,7 @@ const ChatInterface = () => {
         {/* Characters Section */}
         <div className="space-y-2 mb-6">
           <div className="bg-white/10 rounded-lg p-3 flex justify-between items-center shadow-inner">
-            <span className="font-bold text-sm text-white">👤 Characters</span>
+            <span className="font-bold text-sm text-white"><UserRound className="w-4 h-4 mr-1 inline" />Characters</span>
           </div>
           <div className="space-y-2">
             {Object.keys(characterGreetings).map((charName) => (
@@ -228,7 +228,7 @@ const ChatInterface = () => {
             <div className="w-7 h-7 bg-[#03112b] rounded-full flex items-center justify-center text-[10px] text-white font-bold">
               U
             </div>
-            <span className="font-bold text-sm truncate">User.Name000</span>
+            <span className="font-bold text-sm truncate">Username</span>
           </div>
         </div>
       </aside>
@@ -335,7 +335,7 @@ const ChatInterface = () => {
                 disabled={isTyping || !inputValue.trim()}
                 className="ml-2 lg:ml-4 bg-white hover:bg-gray-200 transition-all rounded-full p-2 lg:p-2.5 shadow-lg active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <SendHorizontal className="w-4 lg:w-5 h-4 lg:h-5 text-[#0a4559]" />
+                <CircleArrowUp className="w-4 lg:w-5 h-4 lg:h-5 text-[#0a4559]" />
               </button>
             </div>
           </div>
@@ -371,4 +371,4 @@ const ChatInterface = () => {
   );
 };
 
-export default ChatInterface;
+export default YowamushiAi;
