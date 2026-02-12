@@ -117,18 +117,18 @@ const LandingPage = ({ onStart }) => {
         <section className="w-full max-w-6xl">
           <div className="flex flex-col lg:flex-row gap-12 items-start">
             <div className="lg:w-1/3">
-              <h2 className="text-4xl font-black italic uppercase tracking-tighter text-blue-400 mb-4">The Will to Win</h2>
+              <h2 className="text-4xl font-black italic uppercase tracking-tighter text-blue-400 mb-4">ABOUT</h2>
               <p className="text-gray-400 leading-relaxed">
-                YowaPedaAi is a high-performance chat experience designed to bring the tactical world of competitive cycling to your screen. 
+                YowaPedaAI is an immersive roleplay experience designed to bring the elite members of Hakone Academy directly to you. From high-stakes race banter to quiet moments off the road, your story starts here. 
               </p>
             </div>
             
            <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
           {[
-            { title: 'Neural Tactics', icon: <Brain />, desc: 'Powered by Gemini AI to simulate real-time racing strategies and character-specific dialogue.' },
-            { title: 'Peak Performance', icon: <Zap />, desc: 'Discuss climbing techniques, sprint mechanics, or mental endurance with the best in the Inter-High.' },
-            { title: 'Race Records', icon: <Timer />, desc: 'The AI retains the intensity of the race, allowing for deep, context-aware conversations.' },
-            { title: 'The Hakone Path', icon: <Route />, desc: 'Specifically tuned for Hakone Academy fans who want to feel the heat of the road.' }
+            { title: 'ELITE PERSONAS', icon: <Brain />, desc: 'AUTHENTIC VOICES Powered by GeminiAI to capture the unique speech patterns, quirks, and attitudes of Kuroda, Yuto, and Izumida. It\'s more than a chat—it\'s them.' },
+            { title: 'LIMITLESS SCENARIOS', icon: <Zap />, desc: 'BEYOND THE RACE Whether it\'s a grueling climb up the mountain, a post-training recovery, or a casual after-school AU, the narrative is entirely in your hands.' },
+            { title: 'PERSISTENT MEMORY', icon: <Timer />, desc: 'EVOLVING BONDS The AI remembers your past interactions and shared history, allowing your relationships—and the drama—to grow deeper with every message.' },
+            { title: 'THE HAKONE SPIRIT', icon: <Route />, desc: 'THE KING\'S PRIDE Specifically tuned for fans who want to experience the intensity and brotherhood of Hakone Academy. Feel the heat of the road and the heart of the team.' }
           ].map((item, i) => (
             <div key={i} className="bg-white/5 border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition-all">
               <div className="text-blue-400 mb-4">{item.icon}</div>
