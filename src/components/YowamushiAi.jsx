@@ -1,372 +1,241 @@
-
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, CircleUserRound, MessageSquare, Paperclip, Mic, CircleArrowUp, X, Bike, UserRound } from 'lucide-react';
-import { sendMessageToGemini } from '../lib/gemini';
+import { Menu, CircleUserRound, MessageSquare, Paperclip, Mic, CircleArrowUp, X, Bike, UserRound, Zap, Trophy, ChevronRight, LogOut, ArrowLeft, Brain, Timer, Route } from 'lucide-react';
+import { sendMessageToGemini } from '../lib/gemini'; 
 
-// --- Helper Component: Main Sidebar Navigation Items ---
-const NavItem = ({ icon, label, onClick }) => (
-  <div 
-    onClick={onClick}
-    className="flex items-center justify-between p-3 rounded-lg hover:bg-white/10 cursor-pointer transition-all group active:scale-95"
-  >
-    <span className="font-semibold text-sm">{label}</span>
-    <span className="text-white group-hover:opacity-100">{icon}</span>
-  </div>
-);
+// --- LANDING PAGE COMPONENT ---
+const LandingPage = ({ onStart }) => {
+  return (
+    <div className="min-h-screen w-full bg-[#03112b] overflow-x-hidden font-sans text-white relative">
+      <div className="absolute inset-0 opacity-20 pointer-events-none bg-cover bg-center grayscale fixed" 
+        style={{ backgroundImage: `url('https://wallpapercave.com/wp/wp2293933.jpg')` }} 
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#03112b]/80 via-transparent to-[#03112b]" />
+      
+      <header className="relative z-10 px-6 py-8 lg:px-20 flex justify-between items-center border-b border-white/10 backdrop-blur-sm">
+        <div className="flex items-center gap-2">
+          <Bike className="w-8 h-8 text-blue-400" />
+          <h1 className="text-2xl font-black tracking-tighter italic">YOWAPEDA<span className="text-blue-400">AI</span></h1>
+        </div>
+        <button 
+          onClick={onStart}
+          className="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-full font-bold text-sm transition-all transform hover:scale-105 active:scale-95 shadow-lg"
+        >
+          Enter Chat
+        </button>
+      </header>
 
-// --- Helper Component: Character List Items ---
-const CharacterItem = ({ label, onClick, isActive }) => (
-  <div 
-    onClick={onClick}
-    className={`bg-white/10 rounded-lg p-3 cursor-pointer hover:bg-white/20 transition-all shadow-sm active:scale-95 border-2 ${
-      isActive ? 'border-white/60 scale-105 shadow-lg bg-white/20' : 'border-transparent'
-    }`}
-  >
-    <span className="font-bold text-sm text-white">{label}</span>
-  </div>
-);
+      <main className="relative z-10 flex flex-col items-center pt-20 pb-32 px-6">
+        <div className="text-center max-w-4xl mb-24">
+          <div className="inline-block bg-blue-600/20 border border-blue-500/30 px-4 py-1 rounded-full text-blue-300 text-xs font-black uppercase tracking-widest mb-6">Hakone Academy Edition</div>
+          <h2 className="text-5xl lg:text-8xl font-black italic tracking-tighter mb-6 leading-none uppercase">OVER THE <span className="text-blue-500">LIMIT.</span></h2>
+          <p className="text-gray-400 text-lg lg:text-xl max-w-2xl mx-auto mb-10">Chat with the kings of the road. AI-powered Hakone Academy rivals await your challenge.</p>
+          <button onClick={onStart} className="group relative inline-flex items-center gap-3 bg-white text-[#03112b] px-10 py-5 rounded-2xl font-black text-xl transition-all hover:bg-blue-500 hover:text-white shadow-[0_0_50px_rgba(59,130,246,0.3)] active:scale-95">
+            START TRAINING <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl mb-32">
+          {['Kuroda Yukinari', 'Shinkai Yuto', 'Izumida Touichirou'].map((name) => (
+            <div key={name} className="bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-3xl hover:border-blue-400/50 transition-all group cursor-default">
+              <Bike className="w-10 h-10 text-blue-400 mb-6 group-hover:rotate-12 transition-transform" />
+              <h3 className="text-2xl font-bold italic uppercase tracking-tighter">{name}</h3>
+              <div className="h-1 w-12 bg-blue-500 rounded-full mt-4 group-hover:w-full transition-all duration-500"></div>
+            </div>
+          ))}
+        </div>
+
+        <section className="w-full max-w-6xl">
+          <div className="flex flex-col lg:flex-row gap-12 items-start">
+            <div className="lg:w-1/3">
+              <h2 className="text-4xl font-black italic uppercase tracking-tighter text-blue-400 mb-4">The Will to Win</h2>
+              <p className="text-gray-400 leading-relaxed">
+                YowaPedaAi is a high-performance chat experience designed to bring the tactical world of competitive cycling to your screen. 
+                Utilizing advanced AI models, we recreate the personalities and racing philosophies of the legendary Hakone Academy.
+              </p>
+            </div>
+            
+            <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {[
+                { title: 'Neural Tactics', icon: <Brain />, desc: 'Powered by Gemini AI to simulate real-time racing strategies and character-specific dialogue.' },
+                { title: 'Peak Performance', icon: <Zap />, desc: 'Discuss climbing techniques, sprint mechanics, or mental endurance with the best in the Inter-High.' },
+                { title: 'Race Records', icon: <Timer />, desc: 'The AI retains the intensity of the race, allowing for deep, context-aware conversations.' },
+                { title: 'The Hakone Path', icon: <Route />, desc: 'Specifically tuned for Hakone Academy fans who want to feel the heat of the road.' }
+              ].map((item, i) => (
+                <div key={i} className="bg-white/5 border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition-all">
+                  <div className="text-blue-400 mb-4">{item.icon}</div>
+                  <h4 className="text-lg font-black italic uppercase mb-2">{item.title}</h4>
+                  <p className="text-sm text-gray-500">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+};
 
 // --- MAIN APPLICATION COMPONENT ---
 const YowamushiAi = () => {
-  const characterGreetings = {
-    'Kuroda Yukinari': "Username, are we climbing, racing, or just talking at the start line?",
-    'Shinkai Yuto': "What do you want to talk about?",
-    'Izumida Touichirou': "Username. Tell me, do you wish to talk cycling?"
-  };
-
-  const characterThemes = {
-    'Kuroda Yukinari': {
-      glow: 'shadow-[0_0_40px_rgba(30,58,138,0.4)]',
-      border: 'border-[#1e3a8a]/30',
-      accent: 'text-blue-300',
-      msgBg: 'bg-[#1e3a8a]/20'
-    },
-    'Shinkai Yuto': {
-      glow: 'shadow-[0_0_40px_rgba(30,58,138,0.4)]',
-      border: 'border-[#1e3a8a]/30',
-      accent: 'text-blue-300',
-      msgBg: 'bg-[#1e3a8a]/20'
-    },
-    'Izumida Touichirou': {
-      glow: 'shadow-[0_0_40px_rgba(30,58,138,0.4)]',
-      border: 'border-[#1e3a8a]/30',
-      accent: 'text-blue-300',
-      msgBg: 'bg-[#1e3a8a]/20'
-    }
-  };
-
+  const [showApp, setShowApp] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [activeCharacter, setActiveCharacter] = useState('Kuroda Yukinari');
-  const [isTyping, setIsTyping] = useState(false);
+  const [activeCharacter, setActiveCharacter] = useState('Izumida Touichirou');
   const [inputValue, setInputValue] = useState('');
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      sender: 'bot',
-      text: characterGreetings['Kuroda Yukinari']
-    }
-  ]);
+  const [isTyping, setIsTyping] = useState(false);
+  const [messages, setMessages] = useState([]); // Start empty to allow typing effect on load
+
+  const characterGreetings = {
+    'Kuroda Yukinari': "Are we climbing, racing, or just talking at the start line?",
+    'Shinkai Yuto': "What do you want to talk about?",
+    'Izumida Touichirou': "Tell me, do you wish to talk cycling?"
+  };
 
   const messagesEndRef = useRef(null);
-  const currentTheme = characterThemes[activeCharacter];
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
 
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
-  const handleSwitchCharacter = (name) => {
-    setActiveCharacter(name);
-    setMessages([
-      {
-        id: Date.now(),
-        sender: 'bot',
-        text: characterGreetings[name]
-      }
-    ]);
-    setInputValue('');
-    setIsSidebarOpen(false);
-  };
-
-  const handleNewChat = () => {
-    setMessages([
-      {
-        id: Date.now(),
-        sender: 'bot',
-        text: characterGreetings[activeCharacter]
-      }
-    ]);
-    setInputValue('');
-    setIsSidebarOpen(false);
-  };
+  // Initial greeting effect when entering chat
+  useEffect(() => {
+    if (showApp && messages.length === 0) {
+      resetToGreeting(activeCharacter);
+    }
+  }, [showApp]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || isTyping) return;
-
-    const userMessage = inputValue;
+    const userMsg = inputValue;
     setInputValue('');
-
-    // Add user message
-    const newUserMsg = {
-      id: Date.now(),
-      sender: 'user',
-      text: userMessage
-    };
-    setMessages(prev => [...prev, newUserMsg]);
+    setMessages(prev => [...prev, { id: Date.now(), sender: 'user', text: userMsg }]);
     setIsTyping(true);
 
     try {
-      // Prepare history (exclude initial greeting and current message)
-      const historyForApi = messages
-        .slice(1) // Skip first greeting
-        .map(m => ({
-          role: m.sender === 'user' ? 'user' : 'model',
-          message: m.text
-        }));
-
-      const responseText = await sendMessageToGemini(userMessage, activeCharacter, historyForApi);
-      
-      setMessages(prev => [
-        ...prev,
-        {
-          id: Date.now(),
-          sender: 'bot',
-          text: responseText
-        }
-      ]);
+      const history = messages.slice(1).map(m => ({
+        role: m.sender === 'user' ? 'user' : 'model',
+        message: m.text
+      }));
+      const responseText = await sendMessageToGemini(userMsg, activeCharacter, history);
+      setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: responseText }]);
     } catch (error) {
-      console.error('Chat error:', error);
-      setMessages(prev => [
-        ...prev,
-        {
-          id: Date.now(),
-          sender: 'bot',
-          text: `Error: ${error?.message || String(error)}`
-        }
-      ]);
+      setMessages(prev => [...prev, { id: Date.now() + 1, sender: 'bot', text: "The road is blocked. (Error connecting to AI)" }]);
     } finally {
       setIsTyping(false);
     }
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
+  const resetToGreeting = (charName) => {
+    setActiveCharacter(charName);
+    setMessages([]); // Clear chat
+    setIsTyping(true); // Show typing bubbles
+    setIsSidebarOpen(false);
+    
+    // Simulate typing for 1.5 seconds before showing default line
+    setTimeout(() => {
+      setMessages([{ id: Date.now(), sender: 'bot', text: characterGreetings[charName] }]);
+      setIsTyping(false);
+    }, 1500);
   };
 
+  if (!showApp) return <LandingPage onStart={() => setShowApp(true)} />;
+
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#bfdbfe] font-sans text-white">
-      {/* Overlay for mobile sidebar */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity duration-300"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
+    <div className="flex h-screen w-full overflow-hidden bg-[#03112b] font-sans text-white relative">
+      <div className="absolute inset-0 opacity-20 pointer-events-none bg-cover bg-center grayscale" 
+        style={{ backgroundImage: `url('https://static.wikia.nocookie.net/yowamushipedal/images/9/9d/Ahighplacecover.jpg/revision/latest?cb=20190804220737')` }} 
+      />
 
-      {/* SIDEBAR */}
-      <aside className={`
-        fixed inset-y-0 left-0 z-50 w-72 transform transition-transform duration-300 ease-in-out
-        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:relative lg:translate-x-0
-        flex flex-col h-full bg-[#03112b] p-5 border-r border-white/5
-      `}>
-        {/* Header */}
+      {isSidebarOpen && <div className="fixed inset-0 bg-black/70 z-40 lg:hidden" onClick={() => setIsSidebarOpen(false)} />}
+
+      <aside className={`fixed inset-y-0 left-0 z-50 w-72 transform transition-transform duration-300 lg:relative lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col h-full bg-[#03112b] p-5 border-r border-white/10 shadow-2xl`}>
         <div className="flex items-center justify-between mb-8 px-1">
-          <div className="flex items-center gap-2">
-            <Bike className="w-6 h-6 text-white" />
-            <h1 className="text-xl font-bold tracking-tight text-white">YowaPedaAi</h1>
+          <div className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" onClick={() => setShowApp(false)}>
+            <ArrowLeft className="w-5 h-5 text-blue-400" />
+            <h1 className="text-xl font-black italic tracking-tighter uppercase">YOWAPEDA<span className="text-blue-400">AI</span></h1>
           </div>
-          <button 
-            onClick={() => setIsSidebarOpen(false)}
-            className="lg:hidden p-1"
+          <X className="lg:hidden cursor-pointer" onClick={() => setIsSidebarOpen(false)} />
+        </div>
+
+        <nav className="space-y-6">
+          <div className="bg-[#1e3a8a]/30 p-3 rounded-xl border border-white/5 flex items-center gap-3">
+             <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center font-black">U</div>
+             <span className="font-bold text-sm tracking-wide">Username</span>
+          </div>
+
+          <div 
+            onClick={() => resetToGreeting(activeCharacter)}
+            className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 cursor-pointer transition-all border border-white/10 active:scale-95"
           >
-            <X className="w-6 h-6 text-white" />
-          </button>
-          <Menu className="hidden lg:block w-6 h-6 cursor-pointer text-white" />
-        </div>
-
-        {/* User Profile */}
-        <div className="flex items-center gap-3 mb-8 px-1">
-          <CircleUserRound className="w-9 h-9 text-white" />
-          <span className="font-semibold text-sm">Username</span>
-        </div>
-
-        {/* Navigation */}
-        <nav className="space-y-1 mb-6">
-          <NavItem 
-            icon={<MessageSquare size={20} />} 
-            label="New Chat"
-            onClick={handleNewChat}
-          />
-        </nav>
-
-        {/* Characters Section */}
-        <div className="space-y-2 mb-6">
-          <div className="bg-white/10 rounded-lg p-3 flex justify-between items-center shadow-inner">
-            <span className="font-bold text-sm text-white"><UserRound className="w-4 h-4 mr-1 inline" />Characters</span>
+            <span className="font-bold text-sm">New Chat</span>
+            <MessageSquare className="w-4 h-4 text-blue-400" />
           </div>
+
           <div className="space-y-2">
-            {Object.keys(characterGreetings).map((charName) => (
-              <CharacterItem
-                key={charName}
-                label={charName.split(' ')[0]}
-                isActive={activeCharacter === charName}
-                onClick={() => handleSwitchCharacter(charName)}
-              />
+            <p className="text-[10px] font-black uppercase tracking-widest text-blue-400 px-1 mb-4">Elite Rivals</p>
+            {Object.keys(characterGreetings).map(name => (
+              <div 
+                key={name}
+                onClick={() => resetToGreeting(name)}
+                className={`p-3 rounded-xl cursor-pointer transition-all border-2 ${activeCharacter === name ? 'bg-blue-600/30 border-blue-500 shadow-lg' : 'bg-[#03112b] border-transparent hover:bg-white/5'}`}
+              >
+                <span className="font-black italic text-sm">{name.split(' ')[0]}</span>
+              </div>
             ))}
           </div>
-        </div>
-
-        {/* Footer */}
-        <div className="mt-auto pt-4 border-t border-white/5">
-          <div className="bg-white text-[#03112b] rounded-lg p-3 flex items-center gap-2 shadow-xl">
-            <div className="w-7 h-7 bg-[#03112b] rounded-full flex items-center justify-center text-[10px] text-white font-bold">
-              U
-            </div>
-            <span className="font-bold text-sm truncate">Username</span>
-          </div>
-        </div>
+        </nav>
       </aside>
 
-      {/* MAIN CONTENT */}
-      <main 
-        className="flex-1 relative flex items-center justify-center p-2 sm:p-4 lg:p-6 bg-cover bg-center"
-        style={{ 
-          backgroundImage: `url('https://media.canva.com/v2/image-resize/format:JPG/height:800/quality:92/uri:ifs%3A%2F%2FM%2F6d6981c9-bbb2-4f6f-a379-da6be4f095bc/watermark:F/width:517?csig=AAAAAAAAAAAAAAAAAAAAAJ4PN3OZ5zoF4cgvs1xHMTmzpns43c0ZOM97FtaGiFFQ&exp=1770882585&osig=AAAAAAAAAAAAAAAAAAAAABe8VeHxNPveLB2GFw20YsEdM3Yk6Sku8OVcvBDat-kN&signer=media-rpc&x-canva-quality=screen')`
-        }}
-      >
-        {/* Chat Container - Separate Box */}
-        <div className ={` opacity-90
-          relative w-full max-w-5xl h-full lg:h-[85vh] 
-          bg-[#0d2545]/95 backdrop-blur-xl 
-          rounded-2xl lg:rounded-[40px] border-2 border-white/10
-          transition-all duration-700 
-          flex flex-col overflow-hidden
-          shadow-2xl
-        `}>
-          {/* Header Bar */}
-          <div className="flex items-center justify-between px-6 py-4 lg:px-10 lg:py-5 border-b-2 border-white/10 bg-[#0a1f3a]/80">
-            <div className="flex items-center gap-2">
-              <button 
-                onClick={() => setIsSidebarOpen(true)}
-                className="lg:hidden p-2 -ml-2 text-white"
-              >
-                <Menu className="w-6 h-6" />
-              </button>
-              <div className="flex items-center gap-2">
-                <span className={`font-bold text-lg lg:text-xl transition-colors duration-500 ${currentTheme.accent}`}>
-                  Chatting with {activeCharacter.split(' ')[0]}
-                </span>
-              </div>
-            </div>
+      <main className="flex-1 relative flex flex-col items-center justify-center p-4 lg:p-8">
+        <div className="lg:hidden flex w-full items-center justify-between mb-4 px-2">
+          <button onClick={() => setIsSidebarOpen(true)} className="p-2 bg-[#0d2545] rounded-lg"><Menu /></button>
+          <span className="font-black italic text-blue-400 uppercase tracking-tighter">RACING: {activeCharacter.split(' ')[0]}</span>
+          <button onClick={() => setShowApp(false)} className="p-2 bg-[#0d2545] rounded-lg"><LogOut className="w-5 h-5" /></button>
+        </div>
+
+        <div className="opacity-90 relative w-full max-w-3xl h-[85vh] lg:h-[80vh] bg-[#0d2545] rounded-[40px] border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden">
+          <div className="flex items-center justify-between px-8 py-6 border-b border-white/10 bg-[#0a1b33]">
+            <h2 className="text-lg font-black italic tracking-tighter uppercase">Challenging <span className="text-blue-400">{activeCharacter}</span></h2>
+            <button onClick={() => setShowApp(false)} className="flex items-center gap-2 bg-white/5 hover:bg-red-500/20 px-4 py-2 rounded-xl border border-white/10 transition-all text-[10px] font-black tracking-widest uppercase hover:text-red-400"><LogOut className="w-3 h-3" />Quit Race</button>
           </div>
 
-          {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto space-y-4 lg:space-y-6 px-6 py-6 lg:px-10 lg:py-8 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto px-8 py-8 space-y-6 custom-scrollbar bg-[#0d2545]">
             {messages.map((msg) => (
-              <div 
-                key={msg.id}
-                className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-pop`}
-              >
-                <div className={`
-                  max-w-[85%] lg:max-w-[70%] 
-                  p-4 lg:p-5 
-                  rounded-2xl lg:rounded-3xl 
-                  shadow-lg border-2 
-                  transition-all duration-500
-                  ${msg.sender === 'user' 
-                    ? 'bg-[#1e3a8a]/70 text-white rounded-tr-none border-white/20' 
-                    : `${currentTheme.msgBg} text-white rounded-tl-none ${currentTheme.border} backdrop-blur-md border-white/10`
-                  }
-                `}>
-                  <p className="text-xs lg:text-sm font-medium leading-relaxed text-white">
-                    {msg.text}
-                  </p>
+              <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-pop`}>
+                <div className={`max-w-[85%] p-4 lg:p-5 rounded-2xl shadow-xl border ${msg.sender === 'user' ? 'bg-blue-600 text-white rounded-tr-none border-blue-400' : 'bg-[#1e3a8a]/40 text-white rounded-tl-none border-white/10'}`}>
+                  <p className="text-sm font-bold italic leading-relaxed">{msg.text}</p>
                 </div>
               </div>
             ))}
-
-            {/* Typing Indicator */}
             {isTyping && (
               <div className="flex justify-start animate-pop">
-                <div className={`p-4 lg:p-5 rounded-2xl lg:rounded-3xl shadow-lg border-2 ${currentTheme.msgBg} ${currentTheme.border} backdrop-blur-md border-white/10`}>
-                  <div className="flex gap-1 items-center h-4 text-white">
-                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce"></span>
-                  </div>
+                <div className="bg-[#1e3a8a]/40 p-4 rounded-xl flex gap-1">
+                  <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce"></span>
+                  <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                  <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
                 </div>
               </div>
             )}
-
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Bar */}
-          <div className="px-6 py-4 lg:px-10 lg:py-5 border-t-2 border-white/10 bg-[#0a1f3a]/80">
-            <div className={` 
-              relative w-full 
-              bg-[#52829f] border-2 border-white/20
-              transition-all duration-700 
-              rounded-2xl flex items-center 
-              px-4 py-3 lg:px-5 lg:py-4 
-              shadow-xl
-            `}>
-              <div className="flex items-center gap-3 lg:gap-4 mr-2 lg:mr-3">
-                <Paperclip className="w-4 lg:w-5 h-4 lg:h-5 text-white/70 hover:text-white cursor-pointer transition-colors" />
-                <Mic className="w-4 lg:w-5 h-4 lg:h-5 text-white/70 hover:text-white cursor-pointer transition-colors" />
+          <div className="p-8 bg-[#0a1b33] border-t border-white/10">
+            <div className="relative flex items-center bg-[#1e3a8a]/20 rounded-2xl px-5 py-2 border border-white/10 focus-within:border-blue-500/50 transition-all">
+              <div className="flex items-center gap-3 mr-3 text-white/50">
+                <Paperclip className="w-5 h-5 hover:text-white cursor-pointer transition-colors" />
+                <Mic className="w-5 h-5 hover:text-white cursor-pointer transition-colors" />
               </div>
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder={`Chatting with ${activeCharacter.split(' ')[0]}...`}
-                className="bg-transparent flex-1 outline-none text-white text-xs lg:text-sm placeholder:text-white/30 font-medium"
-                disabled={isTyping}
-              />
-              <button 
-                onClick={handleSendMessage}
-                disabled={isTyping || !inputValue.trim()}
-                className="ml-2 lg:ml-3 bg-white hover:bg-gray-200 transition-all rounded-full p-2 lg:p-2.5 shadow-lg active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <CircleArrowUp className="w-4 lg:w-5 h-4 lg:h-5 text-[#0a4559]" />
-              </button>
+              <input type="text" value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} placeholder={`Tell ${activeCharacter.split(' ')[0]} your next move...`} className="bg-transparent flex-1 outline-none py-3 text-sm font-black italic placeholder:text-gray-500" disabled={isTyping} />
+              <button onClick={handleSendMessage} disabled={isTyping || !inputValue.trim()} className="bg-blue-600 p-2 rounded-xl hover:bg-blue-500 shadow-lg ml-2 transition-transform active:scale-90 disabled:opacity-50"><CircleArrowUp className="w-6 h-6" /></button>
             </div>
           </div>
         </div>
       </main>
 
       <style>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.2);
-          border-radius: 10px;
-        }
-        @keyframes pop {
-          0% {
-            opacity: 0;
-            transform: scale(0.95) translateY(10px);
-          }
-          100% {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-          }
-        }
-        .animate-pop {
-          animation: pop 0.4s ease-out forwards;
-        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.3); border-radius: 10px; }
+        @keyframes pop { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+        .animate-pop { animation: pop 0.3s ease-out forwards; }
       `}</style>
     </div>
   );
