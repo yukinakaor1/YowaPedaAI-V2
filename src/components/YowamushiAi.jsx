@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect, useRef } from 'react';
-import { Menu, CircleUserRound, MessageSquare, ChevronDown, Paperclip, Mic, CircleArrowUp, X, Bike, UserRound } from 'lucide-react';
+import { Menu, CircleUserRound, MessageSquare, Paperclip, Mic, CircleArrowUp, X, Bike, UserRound } from 'lucide-react';
 import { sendMessageToGemini } from '../lib/gemini';
 
 // --- Helper Component: Main Sidebar Navigation Items ---
@@ -26,7 +27,7 @@ const CharacterItem = ({ label, onClick, isActive }) => (
 );
 
 // --- MAIN APPLICATION COMPONENT ---
-const ChatInterface = () => {
+const YowamushiAi = () => {
   const characterGreetings = {
     'Kuroda Yukinari': "Username, are we climbing, racing, or just talking at the start line?",
     'Shinkai Yuto': "What do you want to talk about?",
@@ -41,16 +42,16 @@ const ChatInterface = () => {
       msgBg: 'bg-[#1e3a8a]/20'
     },
     'Shinkai Yuto': {
-      glow: 'shadow-[0_0_40px_rgba(239,68,68,0.4)]',
-      border: 'border-red-600/30',
-      accent: 'text-red-300',
-      msgBg: 'bg-red-900/20'
+      glow: 'shadow-[0_0_40px_rgba(30,58,138,0.4)]',
+      border: 'border-[#1e3a8a]/30',
+      accent: 'text-blue-300',
+      msgBg: 'bg-[#1e3a8a]/20'
     },
     'Izumida Touichirou': {
-      glow: 'shadow-[0_0_40px_rgba(34,197,94,0.4)]',
-      border: 'border-green-600/30',
-      accent: 'text-green-300',
-      msgBg: 'bg-green-900/20'
+      glow: 'shadow-[0_0_40px_rgba(30,58,138,0.4)]',
+      border: 'border-[#1e3a8a]/30',
+      accent: 'text-blue-300',
+      msgBg: 'bg-[#1e3a8a]/20'
     }
   };
 
@@ -237,50 +238,51 @@ const ChatInterface = () => {
       <main 
         className="flex-1 relative flex items-center justify-center p-2 sm:p-4 lg:p-6 bg-cover bg-center"
         style={{ 
-          backgroundImage: `url('https://i.pinimg.com/736x/28/76/3e/28763eb80c7a8b668ebc7634be99b380.jpg')` 
+          backgroundImage: `url('https://media.canva.com/v2/image-resize/format:JPG/height:800/quality:92/uri:ifs%3A%2F%2FM%2F6d6981c9-bbb2-4f6f-a379-da6be4f095bc/watermark:F/width:517?csig=AAAAAAAAAAAAAAAAAAAAAJ4PN3OZ5zoF4cgvs1xHMTmzpns43c0ZOM97FtaGiFFQ&exp=1770882585&osig=AAAAAAAAAAAAAAAAAAAAABe8VeHxNPveLB2GFw20YsEdM3Yk6Sku8OVcvBDat-kN&signer=media-rpc&x-canva-quality=screen')`
         }}
       >
-        {/* Chat Container */}
-        <div className={`
-          relative w-full max-w-5xl h-full lg:h-[90vh] 
-          bg-[#0f2550]/90 backdrop-blur-xl 
-          rounded-2xl lg:rounded-[40px] border 
+        {/* Chat Container - Separate Box */}
+        <div className ={` opacity-90
+          relative w-full max-w-5xl h-full lg:h-[85vh] 
+          bg-[#0d2545]/95 backdrop-blur-xl 
+          rounded-2xl lg:rounded-[40px] border-2 border-white/10
           transition-all duration-700 
-          flex flex-col p-4 sm:p-6 lg:p-10
-          ${currentTheme.glow} ${currentTheme.border}
+          flex flex-col overflow-hidden
+          shadow-2xl
         `}>
-          {/* Header */}
-          <div className="flex items-center gap-3 mb-6 lg:mb-8">
-            <button 
-              onClick={() => setIsSidebarOpen(true)}
-              className="lg:hidden p-2 -ml-2 text-white"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-            <div className="flex items-center gap-1">
-              <h2 className={`font-bold text-lg transition-colors duration-500 ${currentTheme.accent}`}>
-                Chatting with {activeCharacter.split(' ')[0]}
-              </h2>
-              <ChevronDown className="w-4 h-4 text-white" />
+          {/* Header Bar */}
+          <div className="flex items-center justify-between px-6 py-4 lg:px-10 lg:py-5 border-b-2 border-white/10 bg-[#0a1f3a]/80">
+            <div className="flex items-center gap-2">
+              <button 
+                onClick={() => setIsSidebarOpen(true)}
+                className="lg:hidden p-2 -ml-2 text-white"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
+              <div className="flex items-center gap-2">
+                <span className={`font-bold text-lg lg:text-xl transition-colors duration-500 ${currentTheme.accent}`}>
+                  Chatting with {activeCharacter.split(' ')[0]}
+                </span>
+              </div>
             </div>
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto space-y-6 lg:space-y-8 pr-2 custom-scrollbar">
+          <div className="flex-1 overflow-y-auto space-y-4 lg:space-y-6 px-6 py-6 lg:px-10 lg:py-8 custom-scrollbar">
             {messages.map((msg) => (
               <div 
                 key={msg.id}
                 className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} animate-pop`}
               >
                 <div className={`
-                  max-w-[85%] lg:max-w-[65%] 
-                  p-4 lg:p-6 
+                  max-w-[85%] lg:max-w-[70%] 
+                  p-4 lg:p-5 
                   rounded-2xl lg:rounded-3xl 
-                  shadow-xl border 
+                  shadow-lg border-2 
                   transition-all duration-500
                   ${msg.sender === 'user' 
-                    ? 'bg-[#1e3a8a]/50 text-white rounded-tr-none border-white/10' 
-                    : `${currentTheme.msgBg} text-white rounded-tl-none ${currentTheme.border} backdrop-blur-md`
+                    ? 'bg-[#1e3a8a]/70 text-white rounded-tr-none border-white/20' 
+                    : `${currentTheme.msgBg} text-white rounded-tl-none ${currentTheme.border} backdrop-blur-md border-white/10`
                   }
                 `}>
                   <p className="text-xs lg:text-sm font-medium leading-relaxed text-white">
@@ -293,7 +295,7 @@ const ChatInterface = () => {
             {/* Typing Indicator */}
             {isTyping && (
               <div className="flex justify-start animate-pop">
-                <div className={`p-4 lg:p-6 rounded-2xl lg:rounded-3xl shadow-xl border ${currentTheme.msgBg} ${currentTheme.border} backdrop-blur-md`}>
+                <div className={`p-4 lg:p-5 rounded-2xl lg:rounded-3xl shadow-lg border-2 ${currentTheme.msgBg} ${currentTheme.border} backdrop-blur-md border-white/10`}>
                   <div className="flex gap-1 items-center h-4 text-white">
                     <span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></span>
                     <span className="w-1.5 h-1.5 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></span>
@@ -307,17 +309,16 @@ const ChatInterface = () => {
           </div>
 
           {/* Input Bar */}
-          <div className="mt-4 lg:mt-8 flex justify-center">
-            <div className={`
-              relative w-full max-w-2xl 
-              bg-[#0a4559] border 
+          <div className="px-6 py-4 lg:px-10 lg:py-5 border-t-2 border-white/10 bg-[#0a1f3a]/80">
+            <div className={` 
+              relative w-full 
+              bg-[#52829f] border-2 border-white/20
               transition-all duration-700 
-              rounded-full flex items-center 
-              px-4 py-3 lg:px-6 lg:py-4 
-              shadow-2xl
-              ${currentTheme.border}
+              rounded-2xl flex items-center 
+              px-4 py-3 lg:px-5 lg:py-4 
+              shadow-xl
             `}>
-              <div className="flex items-center gap-3 lg:gap-4 mr-2 lg:mr-4">
+              <div className="flex items-center gap-3 lg:gap-4 mr-2 lg:mr-3">
                 <Paperclip className="w-4 lg:w-5 h-4 lg:h-5 text-white/70 hover:text-white cursor-pointer transition-colors" />
                 <Mic className="w-4 lg:w-5 h-4 lg:h-5 text-white/70 hover:text-white cursor-pointer transition-colors" />
               </div>
@@ -333,7 +334,7 @@ const ChatInterface = () => {
               <button 
                 onClick={handleSendMessage}
                 disabled={isTyping || !inputValue.trim()}
-                className="ml-2 lg:ml-4 bg-white hover:bg-gray-200 transition-all rounded-full p-2 lg:p-2.5 shadow-lg active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="ml-2 lg:ml-3 bg-white hover:bg-gray-200 transition-all rounded-full p-2 lg:p-2.5 shadow-lg active:scale-90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <CircleArrowUp className="w-4 lg:w-5 h-4 lg:h-5 text-[#0a4559]" />
               </button>
