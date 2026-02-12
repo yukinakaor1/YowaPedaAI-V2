@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, Paperclip, Mic, CircleArrowUp, X, Bike, UserRound, Zap, ChevronRight, LogOut, ArrowLeft, Brain} from 'lucide-react';
+import { Route, MessageSquare, Paperclip, Mic, CircleArrowUp, X, Bike, UserRound, Zap, ChevronRight, LogOut, ArrowLeft, Brain, Timer} from 'lucide-react';
 import { sendMessageToGemini } from '../lib/gemini'; 
 
 // --- CHARACTER DATA ---
@@ -123,16 +123,18 @@ const LandingPage = ({ onStart }) => {
               </p>
             </div>
             
-            <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {[
-                { title: 'Neural Tactics', icon: <Brain />, desc: 'Powered by Gemini AI to simulate character-specific dialogue.' },
-                { title: 'Peak Performance', icon: <Zap />, desc: 'Discuss climbing techniques with the best in the Inter-High.' }
-              ].map((item, i) => (
-                <div key={i} className="bg-white/5 border border-white/10 p-6 rounded-2xl">
-                  <div className="text-blue-400 mb-4">{item.icon}</div>
-                  <h4 className="text-lg font-black italic uppercase mb-2">{item.title}</h4>
-                  <p className="text-sm text-gray-500">{item.desc}</p>
-                </div>
+           <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {[
+            { title: 'Neural Tactics', icon: <Brain />, desc: 'Powered by Gemini AI to simulate real-time racing strategies and character-specific dialogue.' },
+            { title: 'Peak Performance', icon: <Zap />, desc: 'Discuss climbing techniques, sprint mechanics, or mental endurance with the best in the Inter-High.' },
+            { title: 'Race Records', icon: <Timer />, desc: 'The AI retains the intensity of the race, allowing for deep, context-aware conversations.' },
+            { title: 'The Hakone Path', icon: <Route />, desc: 'Specifically tuned for Hakone Academy fans who want to feel the heat of the road.' }
+          ].map((item, i) => (
+            <div key={i} className="bg-white/5 border border-white/10 p-6 rounded-2xl hover:bg-white/10 transition-all">
+              <div className="text-blue-400 mb-4">{item.icon}</div>
+              <h4 className="text-lg font-black italic uppercase mb-2">{item.title}</h4>
+              <p className="text-sm text-gray-500">{item.desc}</p>
+            </div>
               ))}
             </div>
           </div>
@@ -235,7 +237,7 @@ const YowamushiAi = () => {
         </nav>
       </aside>
 
-      <main className="flex-1 relative flex flex-col items-center justify-center p-4 lg:p-8">
+      <main className="opacity-90 flex-1 relative flex flex-col items-center justify-center p-4 lg:p-8">
         <div className="relative w-full max-w-3xl h-[85vh] lg:h-[80vh] bg-[#0d2545] rounded-[40px] border border-white/10 shadow-2xl flex flex-col overflow-hidden">
           <div className="flex items-center justify-between px-8 py-6 border-b border-white/10 bg-[#0a1b33]">
             <h2 className="text-lg font-black italic tracking-tighter uppercase tracking-wide">Challenging <span className="text-blue-400">{activeCharacter}</span></h2>
